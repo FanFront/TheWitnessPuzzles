@@ -53,6 +53,7 @@ namespace TWP_Shared
         readonly static string[] fontsToLoad =
         {
             "font/fnt_small",
+            "font/fnt_chinese",
             "font/fnt_constantia_big",
             "font/fnt_mono_digits"
         };
@@ -167,6 +168,7 @@ namespace TWP_Shared
             // Load all fonts from the list
             foreach (string fontName in fontsToLoad)
                 FontProvider.Add(fontName, Content.Load<SpriteFont>(fontName));
+            Localization.ChineseFont = FontProvider["font/fnt_chinese"];
         }
         public void Update(GameTime gameTime)
         {
