@@ -44,7 +44,7 @@ namespace TWP_Shared
         public HistoryGameScreen(Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> textureProvider, Dictionary<string, SpriteFont> fontProvider, ContentManager Content, params object[] data) 
             : base(screenSize, device, textureProvider, fontProvider, Content, data)
         {
-            font = fontProvider["font/fnt_constantia_big"];
+            font = Localization.Font(fontProvider["font/fnt_constantia_big"]);
             texPixel = textureProvider["img/pixel"];
             texLeft = textureProvider["img/left"];
             texRight = textureProvider["img/right"];
