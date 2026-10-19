@@ -24,7 +24,7 @@ namespace TWP_Shared
         public ExtraSettingsGameScreen(Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> textureProvider, Dictionary<string, SpriteFont> fontProvider, ContentManager Content, params object[] data) 
             : base(screenSize, device, textureProvider, fontProvider, Content, data)
         {
-            font = FontProvider["font/fnt_constantia_big"];
+            font = Localization.Font(FontProvider["font/fnt_constantia_big"]);
             texPixel = textureProvider["img/pixel"];
             texCheckbox[0] = textureProvider["img/checkbox0"];
             texCheckbox[1] = textureProvider["img/checkbox1"];
@@ -126,7 +126,7 @@ namespace TWP_Shared
                 GraphicsDevice.Clear(Color.Black);
                 spriteBatch.Begin();
 
-                string caption = "Extra settings";
+                string caption = Localization.T("Extra settings");
 
                 Vector2 captionSize = font.MeasureString(caption);
 
@@ -148,7 +148,7 @@ namespace TWP_Shared
 
                 Vector2 textSize = font.MeasureString("V");
                 float scale = buttonHeight / textSize.Y;
-                spriteBatch.DrawString(font, "Sequential mode", new Vector2(buttonsArea.X, buttonsArea.Y  + buttonHeight * btnHeightMod * 0), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawString(font, Localization.T("Sequential mode"), new Vector2(buttonsArea.X, buttonsArea.Y  + buttonHeight * btnHeightMod * 0), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
                 
                 spriteBatch.End();
                 GraphicsDevice.SetRenderTarget(null);   // Drop the render target
