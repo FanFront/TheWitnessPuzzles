@@ -16,6 +16,7 @@ namespace TWP_Shared
         
         // If this flag is true, then no 'Next Panel' button will be spawned
         readonly bool IsStandalonePanel = false;
+        readonly int TutorialIndex = -1;
 
         PanelRenderer renderer;
 
@@ -52,10 +53,11 @@ namespace TWP_Shared
         public PanelGameScreen(Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content, params object[] data)
             : this(data?[0] as Puzzle,
                    (data?.Length > 1 && data[1] is bool) ? Convert.ToBoolean(data[1]) : false,
+                   (data?.Length > 2 && data[2] is int) ? (int)data[2] : -1,
                    screenSize, device, TextureProvider, FontProvider, Content) { }
         public PanelGameScreen(Puzzle panel, Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content)
-            : this(panel, false, screenSize, device, TextureProvider, FontProvider, Content) { }
-        public PanelGameScreen(Puzzle panel, bool standalonePanel, Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content) 
+            : this(panel, false, -1, screenSize, device, TextureProvider, FontProvider, Content) { }
+        public PanelGameScreen(Puzzle panel, bool standalonePanel, int tutorialIndex, Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content) 
             : base(screenSize, device, TextureProvider, FontProvider, Content)
         {
             if (panel == null)
@@ -63,6 +65,7 @@ namespace TWP_Shared
 
             this.panel = panel;
             IsStandalonePanel = standalonePanel;
+            TutorialIndex = tutorialIndex;
             internalBatch = new SpriteBatch(GraphicsDevice);
             renderer = new PanelRenderer(panel, screenSize, TextureProvider, FontProvider, device);
             startPoints = renderer.StartPoints;
@@ -522,10 +525,12 @@ namespace TWP_Shared
             if (!IsStandalonePanel)
                 (buttons[2] as TwoStateButton).StateActive = true;
 
-            // Add panel to the list of last 10 solved panels
-            FileStorageManager.AddPanelToSolvedList(panel);
-            // Delete current panel save file so it won't be loaded again next time
-            FileStorageManager.DeleteCurrentPanel();
+            // Tutorial (and other standalone) panels must not change normal progression.
+            if (!IsStandalonePanel)
+            {
+                FileStorageManager.AddPanelToSolvedList(panel);
+                FileStorageManager.DeleteCurrentPanel();
+            }
 
             // In sequential mode advance seed by 1
             if (SettingsManager.IsSequentialMode && !IsStandalonePanel)
@@ -719,6 +724,19 @@ namespace TWP_Shared
             // Draw buttons
             foreach (var button in buttons)
                 button.Draw(spriteBatch);
+
+            if (TutorialIndex >= 0 && TutorialIndex < TutorialContent.Lessons.Length)
+            {
+                string hint = panelState.State.HasFlag(PanelStates.Solved)
+                    ? Localization.T("Solved!") : TutorialContent.Lessons[TutorialIndex].Hint;
+                SpriteFont hintFont = Localization.Font(fntDebug);
+                Vector2 extent = hintFont.MeasureString(hint);
+                float scale = Math.Min(Math.Min(ScreenSize.X, ScreenSize.Y) * 0.036f / Math.Max(1f, extent.Y),
+                    ScreenSize.X * 0.70f / Math.Max(1f, extent.X));
+                spriteBatch.DrawString(hintFont, hint,
+                    new Vector2((ScreenSize.X - extent.X * scale) / 2f, ScreenSize.Y * 0.025f),
+                    Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+            }
 
             // Draw node IDs
             if (drawDebug)
