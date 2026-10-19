@@ -2,4 +2,5 @@
 <resources>
     <string name="Hello">Hello World, Click Me!</string>
     <string name="ApplicationName">The Witness Puzzles</string>
+    <string name="app_name">The Witness Puzzles</string>
 </resources>
