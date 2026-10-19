@@ -23,8 +23,8 @@ namespace TWP_Shared
         public MenuGameScreen(Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content, params object[] data)
             : base(screenSize, device, TextureProvider, FontProvider, Content, data)
         {
-            font = FontProvider["font/fnt_constantia_big"];
-            fontSmall = FontProvider["font/fnt_small"];
+            font = Localization.Font(FontProvider["font/fnt_constantia_big"]);
+            fontSmall = Localization.Font(FontProvider["font/fnt_small"]);
             
             texPixel = TextureProvider["img/pixel"];
             
@@ -50,7 +50,10 @@ namespace TWP_Shared
         public override void Activate ()
         {
             base.Activate();
+            buttons.Clear();
+            SpawnButtons();
             RenderBackgroundToTexture();
+            UpdateButtonsPosition();
         }
 
         private void UpdateButtonsPosition()
@@ -94,7 +97,20 @@ namespace TWP_Shared
                 SoundManager.PlayOnce(Sound.MenuEnter);
             };
 
+            TextButton btnTutorial = new TextButton(new Rectangle(), font, "Tutorial", texPixel);
+            btnTutorial.Click += () => {
+                ScreenManager.Instance.AddScreen<TutorialGameScreen>(false, true, true);
+                SoundManager.PlayOnce(Sound.MenuEnter);
+            };
+            TextButton btnRules = new TextButton(new Rectangle(), font, "Rules", texPixel);
+            btnRules.Click += () => {
+                ScreenManager.Instance.AddScreen<TutorialGameScreen>(false, true, false);
+                SoundManager.PlayOnce(Sound.MenuEnter);
+            };
+
             buttons.Add(btnStart);
+            buttons.Add(btnTutorial);
+            buttons.Add(btnRules);
             buttons.Add(btnHistory);
             buttons.Add(btnSettings);
             buttons.Add(btnAbout);
@@ -162,7 +178,7 @@ namespace TWP_Shared
                     menuButtonHeight = (int) (firstLineSize.Y * 0.8f);
                 float menuWidth = ScreenSize.X * 0.8f;
                 float menuTop = secondLinePosition.Y + secondLineSize.Y;
-                float menuHeight = menuButtonHeight * 4;
+                float menuHeight = menuButtonHeight * 6;
                 menuTop += (ScreenSize.Y - menuTop - menuHeight) / 2;
                 
                 menuBounds = new Rectangle((int) (ScreenSize.X - menuWidth) / 2, (int) menuTop, (int) menuWidth, (int) menuHeight);
