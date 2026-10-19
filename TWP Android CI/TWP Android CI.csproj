@@ -27,7 +27,7 @@
     <Using Include="Microsoft.Xna.Framework.Color" Alias="Color" />
     <Compile Include="..\TWP Android\ActivityMain.cs" Link="ActivityMain.cs" />
     <Compile Include="..\TWP Shared\**\*.cs" Exclude="..\TWP Shared\**\obj\**\*;..\TWP Shared\**\bin\**\*" LinkBase="Shared" />
-    <Compile Include="..\TWPBaseLib\**\*.cs" Exclude="..\TWPBaseLib\**\obj\**\*;..\TWPBaseLib\**\bin\**\*" LinkBase="BaseLib" />
+    <Compile Include="..\TWPBaseLib\**\*.cs" Exclude="..\TWPBaseLib\**\obj\**\*;..\TWPBaseLib\**\bin\**\*;..\TWPBaseLib\Properties\AssemblyInfo.cs" LinkBase="BaseLib" />
     <AndroidResource Include="..\TWP Android\Resources\Drawable\*.png" Link="Resources\drawable\%(Filename)%(Extension)" />
     <AndroidResource Include="..\TWP Android\Resources\Drawable\*.xml" Link="Resources\drawable\%(Filename)%(Extension)" />
     <AndroidResource Include="..\TWP Android\Resources\Values\*.xml" Link="Resources\values\%(Filename)%(Extension)" />
