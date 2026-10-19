@@ -17,6 +17,11 @@ namespace TWP_Shared
         // If this flag is true, then no 'Next Panel' button will be spawned
         readonly bool IsStandalonePanel = false;
         readonly int TutorialIndex = -1;
+        readonly Action<int> onTutorialAdvance;
+        TextButton successContinueButton;
+        SpriteFont successFont;
+        Rectangle successCardBounds;
+        Rectangle successActionBounds;
 
         PanelRenderer renderer;
 
@@ -54,10 +59,14 @@ namespace TWP_Shared
             : this(data?[0] as Puzzle,
                    (data?.Length > 1 && data[1] is bool) ? Convert.ToBoolean(data[1]) : false,
                    (data?.Length > 2 && data[2] is int) ? (int)data[2] : -1,
+                   (data?.Length > 3 ? data[3] as Action<int> : null),
                    screenSize, device, TextureProvider, FontProvider, Content) { }
         public PanelGameScreen(Puzzle panel, Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content)
-            : this(panel, false, -1, screenSize, device, TextureProvider, FontProvider, Content) { }
-        public PanelGameScreen(Puzzle panel, bool standalonePanel, int tutorialIndex, Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content) 
+            : this(panel, false, -1, null, screenSize, device, TextureProvider, FontProvider, Content) { }
+        public PanelGameScreen(Puzzle panel, bool standalonePanel, int tutorialIndex, Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content)
+            : this(panel, standalonePanel, tutorialIndex, null, screenSize, device, TextureProvider, FontProvider, Content) { }
+
+        public PanelGameScreen(Puzzle panel, bool standalonePanel, int tutorialIndex, Action<int> tutorialAdvance, Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> TextureProvider, Dictionary<string, SpriteFont> FontProvider, ContentManager Content) 
             : base(screenSize, device, TextureProvider, FontProvider, Content)
         {
             if (panel == null)
@@ -66,6 +75,7 @@ namespace TWP_Shared
             this.panel = panel;
             IsStandalonePanel = standalonePanel;
             TutorialIndex = tutorialIndex;
+            onTutorialAdvance = tutorialAdvance;
             internalBatch = new SpriteBatch(GraphicsDevice);
             renderer = new PanelRenderer(panel, screenSize, TextureProvider, FontProvider, device);
             startPoints = renderer.StartPoints;
@@ -81,6 +91,7 @@ namespace TWP_Shared
             texDelete = TextureProvider["img/delete"];
             texSeed = TextureProvider["img/seed"];
             fntDebug = FontProvider["font/fnt_small"];
+            successFont = Localization.Font(FontProvider["font/fnt_constantia_big"]);
 
             // Fullscreen textures
             backgroundTexture = new RenderTarget2D(GraphicsDevice, screenSize.X, screenSize.Y);
@@ -103,8 +114,84 @@ namespace TWP_Shared
             renderer.RenderPanelToTexture(backgroundTexture, true);
 
             SpawnButtons();
+            string successAction = TutorialIndex >= 0
+                ? (TutorialIndex + 1 < TutorialContent.Lessons.Length ? "Next lesson" : "Back to lessons")
+                : (IsStandalonePanel ? "Back to library" : "Next puzzle");
+            successContinueButton = new TextButton(new Rectangle(), successFont, successAction, texPixel);
+            successContinueButton.Click += ContinueAfterSuccess;
+            UpdateSuccessLayout();
             UpdateButtonsColor();
         }
+
+        private void ContinueAfterSuccess()
+        {
+            // The regular Next button still owns generated-panel transitions, seed
+            // changes and persistence. Reuse it instead of duplicating that logic.
+            if (!panelState.State.HasFlag(PanelStates.Solved) || fade.IsActive)
+                return;
+
+            if (TutorialIndex >= 0)
+            {
+                int nextLesson = TutorialIndex + 1;
+                SoundManager.PlayOnce(Sound.ButtonNextSuccess);
+                if (nextLesson < TutorialContent.Lessons.Length)
+                {
+                    onTutorialAdvance?.Invoke(nextLesson);
+                    ScreenManager.Instance.AddScreen<PanelGameScreen>(
+                        true, true, TutorialContent.CreatePuzzle(nextLesson), true,
+                        nextLesson, onTutorialAdvance);
+                }
+                else
+                {
+                    ScreenManager.Instance.GoBack();
+                }
+            }
+            else if (IsStandalonePanel)
+            {
+                SoundManager.PlayOnce(Sound.MenuEscape);
+                ScreenManager.Instance.GoBack();
+            }
+            else
+            {
+                buttons[2].Press();
+            }
+        }
+
+        private void UpdateSuccessLayout()
+        {
+            int shortSide = Math.Min(ScreenSize.X, ScreenSize.Y);
+            Rectangle puzzle = renderer.PuzzleConfig;
+            int cardWidth, cardHeight, x, y;
+
+            if (ScreenSize.X > ScreenSize.Y)
+            {
+                // Wide phones: the free margin to the LEFT of the puzzle,
+                // opposite the original panel controls.
+                int available = Math.Max(0, puzzle.Left);
+                cardWidth = Math.Max(120, Math.Min((int)(shortSide * 0.68f), (int)(available * 0.84f)));
+                cardHeight = Math.Max(105, (int)(shortSide * 0.43f));
+                x = Math.Max(8, (available - cardWidth) / 2);
+                y = (ScreenSize.Y - cardHeight) / 2;
+            }
+            else
+            {
+                // Tall phones: above the puzzle and below the close icon,
+                // leaving the solved line visible for review.
+                int available = Math.Max(0, puzzle.Top);
+                cardWidth = (int)(ScreenSize.X * 0.80f);
+                cardHeight = Math.Max(105, Math.Min((int)(available * 0.63f), (int)(shortSide * 0.37f)));
+                x = (ScreenSize.X - cardWidth) / 2;
+                y = Math.Max((int)(shortSide * 0.15f), (available - cardHeight) / 2);
+            }
+
+            successCardBounds = new Rectangle(x, y, cardWidth, cardHeight);
+            int horizontalInset = Math.Max(8, cardWidth / 12);
+            successActionBounds = new Rectangle(
+                x + horizontalInset, y + (int)(cardHeight * 0.52f),
+                cardWidth - horizontalInset * 2, (int)(cardHeight * 0.36f));
+            successContinueButton.SetPositionAndSize(successActionBounds.Location, successActionBounds.Size);
+        }
+
         private void SpawnButtons()
         {
             TouchButton btnClose = new TouchButton(new Rectangle(), texClose, null);
@@ -288,6 +375,7 @@ namespace TWP_Shared
                 renderer.RenderPanelToTexture(backgroundTexture, true);
                 UpdateButtonsColor();
                 UpdateButtonsPosition();
+                UpdateSuccessLayout();
             }
         }
 
@@ -335,6 +423,7 @@ namespace TWP_Shared
             renderer.RenderPanelToTexture(backgroundTexture, true);
 
             UpdateButtonsPosition();
+            UpdateSuccessLayout();
 
             // Update lines
             if (line != null)
@@ -348,6 +437,9 @@ namespace TWP_Shared
 
         public override void Update(GameTime gameTime)
         {
+            // Don't let the same tap that submits a solution also activate the
+            // success button. It becomes actionable on the following input.
+            bool wasSolved = panelState.State.HasFlag(PanelStates.Solved);
             HandleScreenTap();
             MoveLine(GetMoveVector());
             panelState.Update();
@@ -376,8 +468,15 @@ namespace TWP_Shared
                 }
             }
 
-            foreach (var button in buttons)
-                button.Update(InputManager.GetTapPosition());
+            Point? tap = InputManager.GetTapPosition();
+            bool onSuccessCard = tap.HasValue &&
+                                 panelState.State.HasFlag(PanelStates.Solved) &&
+                                 successCardBounds.Contains(tap.Value);
+            if (!onSuccessCard)
+                foreach (var button in buttons)
+                    button.Update(tap);
+            if (wasSolved && panelState.State.HasFlag(PanelStates.Solved))
+                successContinueButton.Update(tap);
 
             fade.Update();
 
@@ -392,6 +491,11 @@ namespace TWP_Shared
             Point? tap = GetTapPosition();
             if (tap.HasValue)
             {
+                // Taps on the completion overlay must not begin tracing again.
+                if (panelState.State.HasFlag(PanelStates.Solved) &&
+                    successCardBounds.Contains(tap.Value))
+                    return;
+
                 if (!(panelState.State.HasFlag(PanelStates.EliminationStarted) && !panelState.State.HasFlag(PanelStates.EliminationFinished)))
                 {
                     if (line == null || panelState.State.HasFlag(PanelStates.Solved))
@@ -738,6 +842,9 @@ namespace TWP_Shared
                     Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
             }
 
+            if (panelState.State.HasFlag(PanelStates.Solved))
+                DrawSuccessCard(spriteBatch);
+
             // Draw node IDs
             if (drawDebug)
                 DebugDrawNodeIDs(spriteBatch);
@@ -746,6 +853,28 @@ namespace TWP_Shared
                 spriteBatch.Draw(texPixel, new Rectangle(Point.Zero, ScreenSize), Color.Black * fade.Opacity);
             
             base.Draw(spriteBatch);
+        }
+
+        private void DrawSuccessCard(SpriteBatch spriteBatch)
+        {
+            // Strong contrast and a large touch target: no new image assets.
+            Rectangle outer = successCardBounds;
+            spriteBatch.Draw(texPixel, outer, new Color(102, 226, 149));
+            Rectangle inner = new Rectangle(outer.X + 3, outer.Y + 3,
+                                            Math.Max(1, outer.Width - 6),
+                                            Math.Max(1, outer.Height - 6));
+            spriteBatch.Draw(texPixel, inner, new Color(13, 41, 31));
+            spriteBatch.Draw(texPixel, successActionBounds, new Color(25, 143, 83));
+
+            string message = Localization.T("Puzzle solved!");
+            Vector2 textSize = successFont.MeasureString(message);
+            float scale = Math.Min((outer.Width * 0.89f) / Math.Max(1f, textSize.X),
+                                   (outer.Height * 0.27f) / Math.Max(1f, textSize.Y));
+            Vector2 pos = new Vector2(outer.Center.X - textSize.X * scale / 2f,
+                                      outer.Y + outer.Height * 0.13f);
+            spriteBatch.DrawString(successFont, message, pos, new Color(180, 255, 203),
+                                   0, Vector2.Zero, scale, SpriteEffects.None, 0);
+            successContinueButton.Draw(spriteBatch);
         }
 
         private void DrawLines(SpriteBatch spriteBatch, Color? fillColor = null)
