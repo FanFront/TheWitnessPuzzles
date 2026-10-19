@@ -18,6 +18,7 @@ namespace TWP_Shared
         readonly bool IsStandalonePanel = false;
         readonly int TutorialIndex = -1;
         readonly Action<int> onTutorialAdvance;
+        bool continuePending;
         TextButton successContinueButton;
         SpriteFont successFont;
         Rectangle successCardBounds;
@@ -127,9 +128,10 @@ namespace TWP_Shared
         {
             // The regular Next button still owns generated-panel transitions, seed
             // changes and persistence. Reuse it instead of duplicating that logic.
-            if (!panelState.State.HasFlag(PanelStates.Solved) || fade.IsActive)
+            if (!panelState.State.HasFlag(PanelStates.Solved) || fade.IsActive || continuePending)
                 return;
 
+            continuePending = true;
             if (TutorialIndex >= 0)
             {
                 int nextLesson = TutorialIndex + 1;
@@ -187,8 +189,8 @@ namespace TWP_Shared
             successCardBounds = new Rectangle(x, y, cardWidth, cardHeight);
             int horizontalInset = Math.Max(8, cardWidth / 12);
             successActionBounds = new Rectangle(
-                x + horizontalInset, y + (int)(cardHeight * 0.52f),
-                cardWidth - horizontalInset * 2, (int)(cardHeight * 0.36f));
+                x + horizontalInset, y + (int)(cardHeight * 0.48f),
+                cardWidth - horizontalInset * 2, Math.Max(46, (int)(cardHeight * 0.43f)));
             successContinueButton.SetPositionAndSize(successActionBounds.Location, successActionBounds.Size);
         }
 
@@ -369,6 +371,7 @@ namespace TWP_Shared
                 line = lineMirror = null;
                 this.panel = panel;
                 panelState.ResetToNeutral();
+                continuePending = false;
                 startPoints = renderer.StartPoints;
                 endPoints = renderer.EndPoints;
                 walls = renderer.Walls;
