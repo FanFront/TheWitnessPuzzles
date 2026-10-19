@@ -97,6 +97,9 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed' }
           }
           Get-ChildItem artifacts -Filter '*.apk' | Select-Object Name,Length
+          # apksigner verify intentionally returns nonzero for unsigned candidates.
+          # They are ignored when a verified signed APK has already been copied.
+          $global:LASTEXITCODE = 0
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
