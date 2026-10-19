@@ -14,6 +14,8 @@
     <AndroidManifest>AndroidManifest.xml</AndroidManifest>
     <AndroidKeyStore>false</AndroidKeyStore>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <PublishTrimmed>false</PublishTrimmed>
     <AndroidSupportedAbis>arm64-v8a;armeabi-v7a</AndroidSupportedAbis>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <Nullable>disable</Nullable>
