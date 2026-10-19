@@ -32,7 +32,8 @@ namespace TWP_Shared
             play = MakeButton("Play example", () =>
             {
                 ScreenManager.Instance.AddScreen<PanelGameScreen>(
-                    false, true, TutorialContent.CreatePuzzle(index), true, index);
+                    false, true, TutorialContent.CreatePuzzle(index), true, index,
+                    (Action<int>)SelectLesson);
                 SoundManager.PlayOnce(Sound.MenuEnter);
             });
             back = MakeButton("Back", () =>
@@ -49,6 +50,12 @@ namespace TWP_Shared
             button.Click += onClick;
             buttons.Add(button);
             return button;
+        }
+
+        private void SelectLesson(int lesson)
+        {
+            if (lesson >= 0 && lesson < TutorialContent.Lessons.Length)
+                index = lesson;
         }
 
         private void ChangePage(int direction)
