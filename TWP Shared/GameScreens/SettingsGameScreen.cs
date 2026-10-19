@@ -228,7 +228,7 @@ namespace TWP_Shared
                 buttonsCount++;
 #endif
                 float buttonsAreaWidth = minScreenSize * 0.8f;
-                buttonHeight = (int)(minScreenSize * 0.075f);
+                buttonHeight = (int)(minScreenSize * (ScreenSize.X > ScreenSize.Y ? 0.060f : 0.075f));
                 float buttonsAreaHeight = ScreenSize.Y - (captionPosition.Y + captionSize.Y + buttonHeight * 2);
                 float buttonsAreaTop = captionPosition.Y + captionSize.Y + (buttonsAreaHeight - buttonHeight * buttonsCount * btnHeightMod) / 2;
                 buttonsArea = new Rectangle((int) (ScreenSize.X - buttonsAreaWidth) / 2, (int) buttonsAreaTop, (int) buttonsAreaWidth, (int) (ScreenSize.Y - buttonsAreaTop));
