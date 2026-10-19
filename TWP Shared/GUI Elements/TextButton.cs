@@ -22,9 +22,9 @@ namespace TWP_Shared
         public TextButton(Rectangle bounds, SpriteFont font, string text, Texture2D texPixel, Color? textColor = null, Color? textColorPressed = null, ButtonAlignment buttonAlignment = ButtonAlignment.Center) 
             : base(bounds, null, null)
         {
-            this.font = font;
+            this.font = Localization.Font(font);
             this.texPixel = texPixel;
-            this.text = text;
+            this.text = Localization.T(text);
             this.textColor = textColor ?? Color.White;
             this.textColorPressed = textColorPressed ?? Color.DarkGray;
             this.alignment = buttonAlignment;
@@ -34,7 +34,7 @@ namespace TWP_Shared
 
         private void CalculateRenderDetails()
         {
-            Vector2 renderSize = font.MeasureString(text);
+            Vector2 renderSize = this.font.MeasureString(this.text);
             float xScale = hitbox.Width / renderSize.X;
             float yScale = hitbox.Height / renderSize.Y;
             scale = Math.Min(xScale, yScale);
@@ -65,7 +65,7 @@ namespace TWP_Shared
 
         public override void Draw(SpriteBatch sb, float alpha = 1f)
         {
-            sb.DrawString(font, text, position, (isPressedDown ? textColorPressed : textColor) * alpha, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+            sb.DrawString(this.font, this.text, position, (isPressedDown ? textColorPressed : textColor) * alpha, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
         }
     }
 }

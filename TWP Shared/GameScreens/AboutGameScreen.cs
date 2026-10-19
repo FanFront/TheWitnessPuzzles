@@ -49,8 +49,8 @@ namespace TWP_Shared
         public AboutGameScreen(Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> textureProvider, Dictionary<string, SpriteFont> fontProvider, ContentManager Content, params object[] data) 
             : base(screenSize, device, textureProvider, fontProvider, Content, data)
         {
-            fntBig = FontProvider["font/fnt_constantia_big"];
-            fntSmall = FontProvider["font/fnt_small"];
+            fntBig = Localization.Font(FontProvider["font/fnt_constantia_big"]);
+            fntSmall = Localization.Font(FontProvider["font/fnt_small"]);
             texPixel = textureProvider["img/pixel"];
 
             InitializeScreenSizeDependent();
@@ -73,7 +73,7 @@ namespace TWP_Shared
 
             lineHeight = (int) (textAreaHeight / ((text.Length + 3) * 1.2f));
 
-            string longestString = text.First(x => x.Length == text.Max(z => z.Length));
+            string longestString = text.Select(Localization.T).OrderByDescending(x => fntSmall.MeasureString(x).X).First();
             Vector2 longestMeasure = fntSmall.MeasureString(longestString);
             textScale = Math.Min(lineHeight / longestMeasure.Y, textArea.Width / longestMeasure.X);
 
@@ -170,9 +170,10 @@ namespace TWP_Shared
 
                 for (int i = 0; i < text.Length; i++)
                 {
+                    string localized = Localization.T(text[i]);
                     float mod = i == 0 ? 1.6f : 1;
-                    Vector2 measure = fntSmall.MeasureString(text[i]) * textScale * mod;
-                    spriteBatch.DrawString(fntSmall, text[i], textArea.Location.ToVector2() + new Vector2(textArea.Width / 2 - measure.X / 2, lineHeight * i * 1.2f), Color.White, 0, Vector2.Zero, textScale * mod, SpriteEffects.None, 0);
+                    Vector2 measure = fntSmall.MeasureString(localized) * textScale * mod;
+                    spriteBatch.DrawString(fntSmall, localized, textArea.Location.ToVector2() + new Vector2(textArea.Width / 2 - measure.X / 2, lineHeight * i * 1.2f), Color.White, 0, Vector2.Zero, textScale * mod, SpriteEffects.None, 0);
                 }
 
                 spriteBatch.End();

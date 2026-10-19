@@ -13,6 +13,13 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin font/fnt_chinese.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font/fnt_chinese.spritefont
+
 #begin font/fnt_constantia_big.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

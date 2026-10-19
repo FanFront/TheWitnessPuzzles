@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="Hello">Hello World, Click Me!</string>
-    <string name="ApplicationName">TWP_Android</string>
+    <string name="ApplicationName">The Witness Puzzles</string>
+    <string name="app_name">The Witness Puzzles</string>
 </resources>

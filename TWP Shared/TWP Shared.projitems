@@ -43,6 +43,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Support Classes\ScreenManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameScreens\PanelScreen\SolutionLine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Support Classes\SettingsManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Support Classes\Localization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Support Classes\TutorialContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameScreens\TutorialGameScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Support Classes\SoundManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameScreens\MenuGameScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI Elements\TextButton.cs" />

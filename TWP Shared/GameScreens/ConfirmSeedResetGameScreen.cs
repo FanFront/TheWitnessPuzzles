@@ -24,7 +24,7 @@ namespace TWP_Shared
         public ConfirmSeedResetGameScreen(Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> textureProvider, Dictionary<string, SpriteFont> fontProvider, ContentManager Content, params object[] data) 
             : base(screenSize, device, textureProvider, fontProvider, Content, data)
         {
-            font = FontProvider["font/fnt_constantia_big"];
+            font = Localization.Font(FontProvider["font/fnt_constantia_big"]);
             texPixel = textureProvider["img/pixel"];
             texCheckbox[0] = textureProvider["img/checkbox0"];
             texCheckbox[1] = textureProvider["img/checkbox1"];
@@ -114,8 +114,8 @@ namespace TWP_Shared
                 GraphicsDevice.Clear(Color.Black);
                 spriteBatch.Begin();
 
-                string caption_1 = "Reset progress for";
-                string caption_2 = "sequential mode?";
+                string caption_1 = Localization.T("Reset progress for");
+                string caption_2 = Localization.T("sequential mode?");
 
                 Vector2 captionSize_1 = font.MeasureString(caption_1);
                 Vector2 captionSize_2 = font.MeasureString(caption_2);
