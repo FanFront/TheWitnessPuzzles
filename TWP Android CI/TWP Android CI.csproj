@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- CI-only modern Android shell around the original game's shared C# sources.
+       The legacy Xamarin Android project is retained unchanged. -->
+  <PropertyGroup>
+    <TargetFramework>net9.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ApplicationId>com.fanfront.thewitnesspuzzles</ApplicationId>
+    <ApplicationTitle>The Witness Puzzles</ApplicationTitle>
+    <ApplicationVersion>15</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0.15</ApplicationDisplayVersion>
+    <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
+    <TargetPlatformVersion>35.0</TargetPlatformVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidManifest>AndroidManifest.xml</AndroidManifest>
+    <AndroidKeyStore>false</AndroidKeyStore>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <AndroidSupportedAbis>arm64-v8a;armeabi-v7a</AndroidSupportedAbis>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <DefineConstants>$(DefineConstants);ANDROID</DefineConstants>
+    <MonoGamePlatform>Android</MonoGamePlatform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Some legacy files import System.Drawing alongside XNA, so use the XNA color explicitly. -->
+    <Using Include="Microsoft.Xna.Framework.Color" Alias="Color" />
+    <Compile Include="..\TWP Android\ActivityMain.cs" Link="ActivityMain.cs" />
+    <Compile Include="..\TWP Shared\**\*.cs" Exclude="..\TWP Shared\**\obj\**\*;..\TWP Shared\**\bin\**\*" LinkBase="Shared" />
+    <Compile Include="..\TWPBaseLib\**\*.cs" Exclude="..\TWPBaseLib\**\obj\**\*;..\TWPBaseLib\**\bin\**\*" LinkBase="BaseLib" />
+    <AndroidResource Include="..\TWP Android\Resources\Drawable\*.png" Link="Resources\drawable\%(Filename)%(Extension)" />
+    <AndroidResource Include="..\TWP Android\Resources\Drawable\*.xml" Link="Resources\drawable\%(Filename)%(Extension)" />
+    <AndroidResource Include="..\TWP Android\Resources\Values\*.xml" Link="Resources\values\%(Filename)%(Extension)" />
+    <AndroidResource Include="..\TWP Android\Resources\Values-zh-rCN\*.xml" Link="Resources\values-zh-rCN\%(Filename)%(Extension)" />
+    <!-- Workflow generates this working copy to avoid changing the original Windows MGCB platform. -->
+    <MonoGameContentReference Include="Content\Content.mgcb" Condition="Exists('Content\Content.mgcb')" />
+    <PackageReference Include="MonoGame.Framework.Android" Version="3.8.4.1" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.4.1" />
+  </ItemGroup>
+</Project>
