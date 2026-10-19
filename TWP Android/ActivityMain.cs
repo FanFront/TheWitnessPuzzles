@@ -7,7 +7,7 @@ using TWP_Shared;
 
 namespace TWP_Android
 {
-    [Activity(Label = "@string/ApplicationName"
+    [Activity(Label = "@string/app_name"
         , MainLauncher = true
         , Icon = "@drawable/icon"
         , Theme = "@style/Theme.Splash"
