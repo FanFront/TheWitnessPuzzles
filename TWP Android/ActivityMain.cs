@@ -7,7 +7,7 @@ using TWP_Shared;
 
 namespace TWP_Android
 {
-    [Activity(Label = "The Witness Puzzles"
+    [Activity(Label = "@string/ApplicationName"
         , MainLauncher = true
         , Icon = "@drawable/icon"
         , Theme = "@style/Theme.Splash"
