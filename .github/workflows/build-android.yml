@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feature/chinese-rules-tutorials
   pull_request:
     branches:
       - master
@@ -36,6 +35,10 @@ jobs:
       - name: Install Android workload
         shell: pwsh
         run: dotnet workload install android
+
+      - name: Restore MonoGame content builder
+        shell: pwsh
+        run: dotnet tool restore
 
       - name: Stage Android assets and register game fonts
         shell: pwsh
