@@ -29,6 +29,22 @@ It has to be noted though that _**figuring out what those rules are in the first
 **A:** Library stores last 12 solved panels on the first tab, last 12 skipped panels on the second tab and all your saved panels on the last tab (up to 1000 actually). You can save the panel you liked with the heart button ❤. You can replay any panel from the Library later.
 
 
+## Download the Android APK (GitHub Actions)
+
+This fork has an automated **Build Android APK** workflow. It compiles a modern
+.NET 9 / MonoGame 3.8 Android wrapper around the existing game sources.
+
+1. Open [GitHub Actions – Build Android APK](https://github.com/FanFront/TheWitnessPuzzles/actions/workflows/build-android.yml).
+2. Choose the most recent **successful** workflow run for your commit or pull request.
+3. Expand **Artifacts** and download `TheWitnessPuzzles-Android-APK`.
+4. Unzip the artifact, copy the `-Signed.apk` file to your Android phone, and install it.
+
+The workflow builds an installable test APK without needing secrets or a Play Store
+account. The signing certificate is for CI/testing, not a permanent production
+key. You might have to uninstall a previously installed CI APK before installing
+one from another run. The CI-only project is in `TWP Android CI/`; the original
+Xamarin project is kept for reference.
+
 ## Beginner-friendly fork: Chinese and tutorials
 
 This fork adds the following features to the original Android/Windows puzzle game:
