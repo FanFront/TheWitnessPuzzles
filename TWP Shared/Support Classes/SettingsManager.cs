@@ -26,6 +26,8 @@ namespace TWP_Shared
                                                         = false;    // On Windows fullscreen is Off by default
 #endif
         public static bool BloomFX { get; set; } = false;
+        // auto follows device language; en/zh are saved user overrides.
+        public static string Language { get; set; } = "auto";
         public static float Sensitivity { get; set; } = 1.0f;
 
         // Sequential mode settings
@@ -57,6 +59,7 @@ namespace TWP_Shared
             file.Append("volume = ").Append(MasterVolume).Append("\n");
             file.Append("fullscreen = ").Append(IsFullscreen ? 1 : 0).Append("\n");
             file.Append("bloom = ").Append(BloomFX ? 1 : 0).Append("\n");
+            file.Append("language = ").Append(Language).Append("\n");
             file.Append("sensitivity = ").Append(Sensitivity).Append("\n");
 
 #if ANDROID
@@ -94,6 +97,9 @@ namespace TWP_Shared
                     IsFullscreen = options["fullscreen"] != "0";
                 if (options.ContainsKey("bloom"))
                     BloomFX = options["bloom"] == "1";
+                if (options.ContainsKey("language") && 
+                    (options["language"] == "en" || options["language"] == "zh" || options["language"] == "auto"))
+                    Language = options["language"];
                 if (options.ContainsKey("sensitivity"))
                     Sensitivity = float.Parse(options["sensitivity"]);
 #if ANDROID
