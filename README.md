@@ -29,6 +29,21 @@ It has to be noted though that _**figuring out what those rules are in the first
 **A:** Library stores last 12 solved panels on the first tab, last 12 skipped panels on the second tab and all your saved panels on the last tab (up to 1000 actually). You can save the panel you liked with the heart button ❤. You can replay any panel from the Library later.
 
 
+## Beginner-friendly fork: Chinese and tutorials
+
+This fork adds the following features to the original Android/Windows puzzle game:
+
+- **Simplified Chinese / English:** Follows the device language on first launch. Open **Settings → Language** to switch languages; your choice is saved.
+- **Rules:** Browse all rules directly from the main menu. [Read the Simplified Chinese rules guide](./Puzzle%20Rules%20Guide/RulesGuide.zh-CN.md) or [the original English guide](./Puzzle%20Rules%20Guide/RulesGuide.md).
+- **Tutorial:** Twelve hand-authored lessons introducing paths, gaps, hexagon dots, region separation, colored squares, suns, triangles, polyominoes, rotations, subtraction, erasers, and symmetric/invisible lines. Every lesson has a playable example using the actual puzzle solver. Close its panel to return to the lesson and navigate forward/backward.
+- **Safe progression:** Solving a tutorial doesn't overwrite the normal current puzzle, seed, or history.
+
+### Chinese font build prerequisite
+
+The MonoGame content pipeline **bakes font glyphs at build time**; Android resource `Strings.xml` is not used for the in-game screens. Install **Noto Sans CJK SC** (regular, under that family name) on the **machine building MonoGame content** before building. The new `TWP Shared/Content/font/fnt_chinese.spritefont` contains only the glyphs needed by the current in-app translations, to avoid including all 20,000+ CJK characters. Re-generate its character regions if you add Chinese UI copy.
+
+This is a legacy MonoGame 3.6 / Xamarin Android project, not a modern .NET MAUI project. Keep the original development prerequisites below. Building an APK and checking layout and touch interactions on a physical Android phone are recommended.
+
 ## Technologies and stuff
 - .NET Framework 4.7 and C# 7.0
 - [MonoGame Framework 3.6](http://www.monogame.net)
