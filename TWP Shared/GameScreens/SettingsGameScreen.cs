@@ -28,7 +28,7 @@ namespace TWP_Shared
         public SettingsGameScreen(Point screenSize, GraphicsDevice device, Dictionary<string, Texture2D> textureProvider, Dictionary<string, SpriteFont> fontProvider, ContentManager Content, params object[] data) 
             : base(screenSize, device, textureProvider, fontProvider, Content, data)
         {
-            font = FontProvider["font/fnt_constantia_big"];
+            font = Localization.Font(FontProvider["font/fnt_constantia_big"]);
             texPixel = textureProvider["img/pixel"];
             texCheckbox[0] = textureProvider["img/checkbox0"];
             texCheckbox[1] = textureProvider["img/checkbox1"];
@@ -128,6 +128,27 @@ namespace TWP_Shared
             };
             buttons.Add(btnGeneratorSettings);
 
+            TextButton btnLanguage = new TextButton(new Rectangle(), font,
+                Localization.IsChinese ? "Language: Chinese" : "Language: English", texPixel,
+                buttonAlignment: TextButton.ButtonAlignment.Left);
+            btnLanguage.Click += () => {
+                SettingsManager.Language = Localization.IsChinese ? "en" : "zh";
+                SettingsManager.SaveSettings();
+                ScreenManager.Instance.AddScreen<SettingsGameScreen>(true, true);
+                SoundManager.PlayOnce(Sound.MenuTick);
+            };
+            btnLanguage.UpdateButton += () => {
+                btnLanguage.SetPositionAndSize(buttonsArea.Location + new Point(0,
+                    (int)(buttonHeight * btnHeightMod *
+#if ANDROID
+                    7
+#else
+                    6
+#endif
+                    )), new Point(buttonsArea.Width, buttonHeight));
+            };
+            buttons.Add(btnLanguage);
+
             TextButton btnBack = new TextButton(new Rectangle(), font, "Back", texPixel);
             btnBack.Click += () => {
                 ScreenManager.Instance.GoBack();
@@ -189,7 +210,7 @@ namespace TWP_Shared
                 GraphicsDevice.Clear(Color.Black);
                 spriteBatch.Begin();
 
-                string caption = "Settings";
+                string caption = Localization.T("Settings");
 
                 Vector2 captionSize = font.MeasureString(caption);
 
@@ -201,7 +222,7 @@ namespace TWP_Shared
 
                 spriteBatch.DrawString(font, caption, captionPosition, Color.White, 0, Vector2.Zero, fontScale, SpriteEffects.None, 0);
 
-                int buttonsCount = 6;
+                int buttonsCount = 7;
 #if ANDROID
                 // Android has one extra button
                 buttonsCount++;
@@ -214,13 +235,13 @@ namespace TWP_Shared
 
                 Vector2 textSize = font.MeasureString("V");
                 float scale = buttonHeight / textSize.Y;
-                spriteBatch.DrawString(font, "Sound", new Vector2(buttonsArea.X, buttonsArea.Y), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
-                spriteBatch.DrawString(font, "Volume", new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
-                spriteBatch.DrawString(font, "Sensitivity", new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod * 2), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
-                spriteBatch.DrawString(font, "Fullscreen", new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod * 3), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
-                spriteBatch.DrawString(font, "Bloom FX", new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod * 4), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawString(font, Localization.T("Sound"), new Vector2(buttonsArea.X, buttonsArea.Y), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawString(font, Localization.T("Volume"), new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawString(font, Localization.T("Sensitivity"), new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod * 2), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawString(font, Localization.T("Fullscreen"), new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod * 3), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawString(font, Localization.T("Bloom FX"), new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod * 4), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
 #if ANDROID
-                spriteBatch.DrawString(font, "Lock orientation", new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod * 5), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawString(font, Localization.T("Lock orientation"), new Vector2(buttonsArea.X, buttonsArea.Y + buttonHeight * btnHeightMod * 5), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
 #endif
 
                 spriteBatch.End();
